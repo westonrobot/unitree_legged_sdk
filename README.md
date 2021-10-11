@@ -35,6 +35,6 @@ make
 
 2. Python
 
-    To run the robot with Python scripts, open scripts/Robot_Python.py, then edit the path to "build" folder.
+    To run the robot with Python scripts, open scripts/Unitree_Go1_Python_sdk.py, then edit the path to "build" folder.
 
-    After that, running Robot_Python.py. Right now, the provided Python scripts are only for A1 robot. To use other type robots, edit the "LeggedType" in src/python_interface_high_cmd.cpp, and recompile the project.
+    After that, running Go1.py. Right now, the provided Python scripts are only for Go1 robot.
