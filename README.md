@@ -1,11 +1,11 @@
-# v3.4
+# v3.3.2
 The unitree_legged_sdk is mainly used for communication between PC and Controller board.
 It also can be used in other PCs with UDP.
 
 ### Notice
-support robot: Go1
+support robot: Aliengo, A1(sport_mode >= v1.19)
 
-not support robot: Laikago, Aliengo, A1. (Check release [v3.2](https://github.com/unitreerobotics/unitree_legged_sdk/releases/tag/v3.2) for support)
+not support robot: Laikago, Go1.
 
 ### Dependencies
 * [Boost](http://www.boost.org) (version 1.5.4 or higher)
@@ -29,4 +29,12 @@ make
 ```
 
 ### Usage
-Run examples with 'sudo' for memory locking.
+1.  Cpp
+
+    Run examples with 'sudo' for memory locking.
+
+2. Python
+
+    To run the robot with Python scripts, open scripts/Robot_Python.py, then edit the path to "build" folder.
+
+    After that, running Robot_Python.py. Right now, the provided Python scripts are only for A1 robot. To use other type robots, edit the "LeggedType" in src/python_interface_high_cmd.cpp, and recompile the project.
