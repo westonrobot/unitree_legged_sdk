@@ -1,4 +1,4 @@
-# v3.4
+# v3.4.1
 The unitree_legged_sdk is mainly used for communication between PC and Controller board.
 It also can be used in other PCs with UDP.
 
