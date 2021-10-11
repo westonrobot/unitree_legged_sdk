@@ -14,7 +14,8 @@ namespace UNITREE_LEGGED_SDK
 
 enum class LeggedType { 
 	Aliengo,
-	A1
+	A1,
+	Go1
 };
 
 enum class HighLevelType {
@@ -22,9 +23,8 @@ enum class HighLevelType {
 	Sport
 };
 
-// string VersionSDK();
-void InitEnvironment();
-
+string VersionSDK();
+int InitEnvironment();      // memory lock
 
 // definition of each leg and joint
 constexpr int FR_ = 0;       // leg index

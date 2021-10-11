@@ -18,7 +18,10 @@ using namespace UNITREE_LEGGED_SDK;
 class RobotInterface
 {
 public:
-    RobotInterface(): safe(LeggedType::A1), udp(8090, "192.168.123.161", 8082, sizeof(HighCmd), sizeof(HighState)){
+    RobotInterface():       
+    safe(LeggedType::Go1), 
+      udp(8090, "192.168.123.161", 8082, sizeof(HighCmd), sizeof(HighState))
+    {
         udp.InitCmdData(cmd);
     }
     void UDPRecv();
@@ -68,12 +71,13 @@ void RobotInterface::RobotControl(uint8_t mode, uint8_t gaitType, uint8_t speedL
     cmd.speedLevel = 0;
     cmd.footRaiseHeight = 0;
     cmd.bodyHeight = 0;
-    cmd.euler[0]  = 0;
-    cmd.euler[1] = 0;
-    cmd.euler[2] = 0;
+    cmd.euler[0]  = 0.0f;
+    cmd.euler[1] = 0.0f;
+    cmd.euler[2] = 0.0f;
     cmd.velocity[0] = 0.0f;
     cmd.velocity[1] = 0.0f;
     cmd.yawSpeed = 0.0f;
+    cmd.reserve = 0;
 
     if (mode == 1){
         cmd.mode = mode;
@@ -140,6 +144,8 @@ PYBIND11_MODULE(robot_interface_high_level, m)
         .def_readwrite("yawSpeed", &HighState::yawSpeed)
         .def_readwrite("footPosition2Body", &HighState::footPosition2Body)
         .def_readwrite("footSpeed2Body", &HighState::footSpeed2Body)
+        .def_readwrite("temperature", &HighState::temperature)
+        .def_readwrite("bms", &HighState::bms)
         .def_readwrite("footForce", &HighState::footForce)
         .def_readwrite("footForceEst", &HighState::footForceEst)
         .def_readwrite("wirelessRemote", &HighState::wirelessRemote)

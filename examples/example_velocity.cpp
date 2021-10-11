@@ -11,7 +11,7 @@ using namespace UNITREE_LEGGED_SDK;
 class Custom
 {
 public:
-    Custom(uint8_t level): safe(LeggedType::Aliengo), udp(level){
+    Custom(uint8_t level): safe(LeggedType::Go1), udp(level){
         udp.InitCmdData(cmd);
     }
     void UDPRecv();
@@ -60,9 +60,10 @@ void Custom::RobotControl()
     }
 
     if(motiontime > 10){
-        safe.PowerProtect(cmd, state, 1);
+        int res1 = safe.PowerProtect(cmd, state, 1);
         // You can uncomment it for position protection
-        // safe.PositionProtect(cmd, state, 0.087);
+        // int res2 = safe.PositionProtect(cmd, state, 0.087);
+        if(res1 < 0) exit(-1);
     }
 
     udp.SetSend(cmd);

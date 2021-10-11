@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-sys.path.append('/path/to/build') # Edit the path to "build" folder on your computer
+sys.path.append('/home/bobzhu/Unitree/Python_legged_sdk/unitree_legged_sdk-3.4.1/unitree_legged_sdk-master/build') # Edit the path to "build" folder on your computer
 
 import robot_interface_high_level as robot_interface
 
@@ -75,7 +75,7 @@ class Unitree_Robot():
         self.roll = roll
         self.mode = 1
         robot_state = self.unitree_robot.getState()
-        self.recv_UDP()     
+        self.recv_UDP()
         self.robot_control()
         self.send_UDP()
         return robot_state  

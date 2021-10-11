@@ -1,14 +1,14 @@
 #!/usr/bin/python
-import Unitree_Python_sdk
+import Unitree_Go1_Python_sdk
 
-unitree_robot = Unitree_Python_sdk.Unitree_Robot()
+unitree_go1 = Unitree_Go1_Python_sdk.Unitree_Robot()
 
 while True:
 
     # Uncomment the following line to control the pose of robot
     # The four arguments are: roll, pitch, yaw, bodyHeight.
      
-    # state = unitree_robot.robot_pose(0.0, 0.0, 1, 0.0)
+    # state = unitree_go1.robot_pose(0.0, 0.0, 1, 0.0)
     
     # Uncomment the following line to control the movement of robot
     # The arguments are: gait type, forward speed, sideway speed, rotate speed, speed level and body height.
@@ -19,7 +19,7 @@ while True:
     # Speed level: 0. default low speed. 1. medium speed 
     # Body height: unit: m, default: 0.28m
     
-    # state = unitree_robot.robot_walking(gaitType = 1, forwardSpeed = -0.1, sidewaySpeed = 0.0, rotateSpeed = 0.0, speedLevel = 0, bodyHeight = 0.0)
+    # state = unitree_go1.robot_walking(gaitType = 1, forwardSpeed = -0.1, sidewaySpeed = 0.0, rotateSpeed = 0.0, speedLevel = 0, bodyHeight = 0.0)
     
     
     # return state of robot    
@@ -34,4 +34,4 @@ while True:
     # footSpeed2Body            // foot speed relative to body
     # footForce
     
-    # print(state.imu.rpy[0])
+    #print(state.imu.rpy[0])

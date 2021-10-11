@@ -10,12 +10,36 @@
 namespace UNITREE_LEGGED_SDK 
 {
 
-	constexpr int HIGHLEVEL = 0x00;
-	constexpr int LOWLEVEL  = 0xff;
-	constexpr double PosStopF = (2.146E+9f);
-	constexpr double VelStopF = (16000.0f);
+	constexpr int HIGHLEVEL    = 0x00;
+	constexpr int LOWLEVEL     = 0xff;
+	constexpr int TRIGERLEVEL  = 0xf0;
+	constexpr double PosStopF  = (2.146E+9f);
+	constexpr double VelStopF  = (16000.0f);
+	extern const int HIGH_CMD_LENGTH;      // sizeof(HighCmd)
+	extern const int HIGH_STATE_LENGTH;    // sizeof(HighState)
+	extern const int LOW_CMD_LENGTH;       // shorter than sizeof(LowCmd),   bytes compressed LowCmd length  
+	extern const int LOW_STATE_LENGTH;     // shorter than sizeof(LowState), bytes compressed LowState length
 
 #pragma pack(1)
+
+	typedef struct
+	{
+		uint8_t off;                       // off 0xA5
+		std::array<uint8_t, 3> reserve;
+	} BmsCmd;
+
+	typedef struct
+	{
+		uint8_t version_h;
+		uint8_t version_l;
+		uint8_t bms_status;
+		uint8_t SOC;                       // SOC 0-100%
+		int32_t current;                   // mA
+		uint16_t cycle;
+		std::array<int8_t, 2> BQ_NTC;                  // x1 degrees centigrade
+		std::array<int8_t, 2> MCU_NTC;                 // x1 degrees centigrade
+		std::array<uint16_t, 10> cell_vol;             // cell voltage mV
+	} BmsState;
 
 	typedef struct
 	{
@@ -29,7 +53,7 @@ namespace UNITREE_LEGGED_SDK
 		std::array<float, 4> quaternion;               // quaternion, normalized, (w,x,y,z)
 		std::array<float, 3> gyroscope;                // angular velocity （unit: rad/s)    (raw data)
 		std::array<float, 3> accelerometer;            // m/(s2)                             (raw data)
-		std::array<float, 3> rpy;                      // euler angle（unit: rad)
+		std::array<float, 3> rpy;                       // euler angle（unit: rad)
 		int8_t temperature;
 	} IMU;                                 // when under accelerated motion, the attitude of the robot calculated by IMU will drift.
 
@@ -74,6 +98,7 @@ namespace UNITREE_LEGGED_SDK
 		uint8_t bandWidth;
 		IMU imu;
 		std::array<MotorState, 20> motorState;
+		BmsState bms;
 		std::array<int16_t, 4> footForce;              // force sensors
 		std::array<int16_t, 4> footForceEst;           // force sensors
 		uint32_t tick;                     // reference real-time from motion controller (unit: us)
@@ -90,7 +115,7 @@ namespace UNITREE_LEGGED_SDK
 		uint32_t SN;
 		uint8_t bandWidth;
 		std::array<MotorCmd, 20> motorCmd;
-		std::array<LED, 4> led;
+		BmsCmd bms;
 		std::array<uint8_t, 40> wirelessRemote;
 		uint32_t reserve;
 		uint32_t crc;
@@ -114,6 +139,8 @@ namespace UNITREE_LEGGED_SDK
 		float yawSpeed;                    // (unit: rad/s), rotateSpeed in body frame        
 		std::array<Cartesian, 4> footPosition2Body;    // foot position relative to body
 		std::array<Cartesian, 4> footSpeed2Body;       // foot speed relative to body
+		std::array<int8_t, 20> temperature;
+		BmsState bms;
 		std::array<int16_t, 4> footForce;
 		std::array<int16_t, 4> footForceEst;
 		std::array<uint8_t, 40> wirelessRemote;
@@ -141,7 +168,8 @@ namespace UNITREE_LEGGED_SDK
 											// 11. straightHand
 											// 12. dance1
 											// 13. dance2
-											
+											// 14. two leg stand
+
 		uint8_t gaitType;                  // 0.idle  1.trot  2.trot running  3.climb stair
 		uint8_t speedLevel;                // 0. default low speed. 1. medium speed 2. high speed. during walking, only respond MODE 3
 		float footRaiseHeight;             // (unit: m, default: 0.08m), foot up height while walking
@@ -150,6 +178,7 @@ namespace UNITREE_LEGGED_SDK
 		std::array<float, 3> euler;                    // (unit: rad), roll pitch yaw in stand mode
 		std::array<float, 2> velocity;                 // (unit: m/s), forwardSpeed, sideSpeed in body frame
 		float yawSpeed;                    // (unit: rad/s), rotateSpeed in body frame
+		BmsCmd bms;
 		std::array<LED, 4> led;
 		std::array<uint8_t, 40> wirelessRemote;
 		uint32_t reserve;
@@ -169,9 +198,6 @@ namespace UNITREE_LEGGED_SDK
 		unsigned long long RecvLoseError;  // total lose package count	
 	} UDPState;                            // UDP communication state
 
-	constexpr int HIGH_CMD_LENGTH   = (sizeof(HighCmd));
-	constexpr int HIGH_STATE_LENGTH = (sizeof(HighState));
-	
 }
 
 #endif

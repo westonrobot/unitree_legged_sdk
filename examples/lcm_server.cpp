@@ -1,7 +1,3 @@
-/*****************************************************************
- Copyright (c) 2020, Unitree Robotics.Co.Ltd. All rights reserved.
-******************************************************************/
-
 #include "unitree_legged_sdk/lcm_server.h"
 #include <iostream>
 

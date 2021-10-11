@@ -13,7 +13,10 @@ using namespace UNITREE_LEGGED_SDK;
 class Custom
 {
 public:
-    Custom(uint8_t level): safe(LeggedType::A1), udp(8090, "192.168.123.161", 8082, sizeof(HighCmd), sizeof(HighState)){
+    Custom(uint8_t level): 
+      safe(LeggedType::A1), 
+      udp(8090, "192.168.123.161", 8082, sizeof(HighCmd), sizeof(HighState))
+    {
         udp.InitCmdData(cmd);
     }
     void UDPRecv();
@@ -43,10 +46,9 @@ void Custom::RobotControl()
 {
     motiontime += 2;
     udp.GetRecv(state);
+    printf("%d   %f\n", motiontime, state.imu.quaternion[2]);
 
-    // printf("%f %f %f %f %f\n", state.imu.rpy[1], state.imu.rpy[2], state.position[0], state.position[1], state.velocity[0]);
-
-    cmd.mode = 0;
+    cmd.mode = 0;      // 0:idle, default stand      1:forced stand     2:walk continuously
     cmd.gaitType = 0;
     cmd.speedLevel = 0;
     cmd.footRaiseHeight = 0;
@@ -57,7 +59,7 @@ void Custom::RobotControl()
     cmd.velocity[0] = 0.0f;
     cmd.velocity[1] = 0.0f;
     cmd.yawSpeed = 0.0f;
-
+    cmd.reserve = 0;
 
     if(motiontime > 0 && motiontime < 1000){
         cmd.mode = 1;
@@ -123,7 +125,6 @@ void Custom::RobotControl()
         cmd.bodyHeight = 0.1;
         // printf("walk\n");
     }
-
     if(motiontime>24000 ){
         cmd.mode = 1;
     }
