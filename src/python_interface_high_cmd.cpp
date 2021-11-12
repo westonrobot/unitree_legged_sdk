@@ -92,6 +92,9 @@ void RobotInterface::RobotControl(uint8_t mode, uint8_t gaitType, uint8_t speedL
         cmd.velocity[1] = sidewaySpeed;
         cmd.yawSpeed = rotateSpeed;
     }
+    else{
+        cmd.mode = mode;
+    }
 
 
     udp.SetSend(cmd);
