@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-sys.path.append('/path/to/build') # Edit the path to "build" folder on your computer
+sys.path.append('/path/to/unitree_legged_sdk-3.3.2/build') # Edit the path to "build" folder on your computer
 
 import robot_interface_high_level as robot_interface
 
@@ -22,6 +22,7 @@ class Unitree_Robot():
         self.yaw = 0.0
         self.pitch = 0.0
         self.roll = 0.0
+        self.quit_dance_time = 0
 
     def cmd_init(self):
         self.mode = 0
@@ -35,6 +36,7 @@ class Unitree_Robot():
         self.yaw = 0.0
         self.pitch = 0.0
         self.roll = 0.0
+        self.quit_dance_time = 0
     
     def send_UDP(self):
         self.unitree_robot.UDPSend()
@@ -78,4 +80,48 @@ class Unitree_Robot():
         self.recv_UDP()     
         self.robot_control()
         self.send_UDP()
-        return robot_state  
+        return robot_state 
+    
+    def jump_yaw(self):
+        self.cmd_init()
+        self.mode = 10
+        robot_state = self.unitree_robot.getState()
+        self.recv_UDP()
+        self.robot_control()
+        self.send_UDP()
+        return robot_state       
+
+    def straight_hand(self):
+        self.cmd_init()
+        self.mode = 11
+        robot_state = self.unitree_robot.getState()
+        self.recv_UDP()
+        self.robot_control()
+        self.send_UDP()
+        return robot_state      
+    
+    def robot_dance(self, dance_genre):
+        self.cmd_init()
+        if (dance_genre == 1):
+            self.mode = 12
+        elif (dance_genre == 2):
+            self.mode = 13
+        robot_state = self.unitree_robot.getState()
+        self.recv_UDP()
+        self.robot_control()
+        self.send_UDP()
+        return robot_state
+
+    def quit_dance(self):
+        self.quit_dance_time += 1
+        if (self.quit_dance_time < 500):
+            self.mode = 2
+        if (self.quit_dance_time >= 500):
+            self.mode = 1
+        robot_state = self.unitree_robot.getState()
+        self.recv_UDP()
+        self.robot_control()
+        self.send_UDP()
+        return robot_state        
+        
+        
