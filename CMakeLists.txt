@@ -1,58 +1,67 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(unitree_legged_sdk)
+cmake_minimum_required(VERSION 3.5)
+project(unitree_legged_sdk VERSION 3.8.0)
 
-# check arch and os
-message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
-  set(ARCH amd64)
-endif()
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "aarch64.*")
-  set(ARCH arm64)
-endif()
+## Project Options
+option(BUILD_EXAMPLES "Build examples" ON)
 
-include_directories(include)
-link_directories(lib/cpp/${ARCH})
-
-option(PYTHON_BUILD "build python wrapper" OFF)
-if(PYTHON_BUILD)
-  add_subdirectory(python_wrapper)
-endif()
-
-set(EXTRA_LIBS -pthread libunitree_legged_sdk.a)
-set(CMAKE_CXX_FLAGS "-O3 -fPIC")
+## Set compiler to use c++ 14 features
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(catkin QUIET)
-if(${catkin_FOUND})
-  catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_SOURCE_DIR}/lib/cpp/${ARCH}/libunitree_legged_sdk.a
-  )
+## Chosse build type
+set(default_build_type "Release")
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+            STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+            "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif ()
+
+## Use GNUInstallDirs to install libraries into correct locations on all platforms.
+include(GNUInstallDirs)
+
+## Put all binary files into /bin and libraries into /lib
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+## Check system architecture
+message(STATUS "Current system architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+
+## Import Unitree SDK2 library
+if ("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
+    set(UNITREE_LIB_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/cpp/amd64)
+elseif ("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "aarch64.*")
+    set(UNITREE_LIB_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/cpp/arm64)
+endif ()
+find_library(UNITREE_SDK_LIB unitree_legged_sdk PATHS ${UNITREE_LIB_PATH})
+
+if (NOT UNITREE_SDK_LIB)
+    message(FATAL_ERROR "Unitree SDK2 library not found")
+else ()
+    message(STATUS "Unitree SDK2 library found at: ${UNITREE_SDK_LIB}")
+endif ()
+
+find_package(Threads REQUIRED)
+find_package(Boost REQUIRED)
+
+#find_package(PkgConfig REQUIRED)
+#pkg_check_modules(LCM REQUIRED IMPORTED_TARGET lcm)
+
+add_library(unitree_sdk1 SHARED IMPORTED GLOBAL)
+set_target_properties(unitree_sdk1 PROPERTIES
+        IMPORTED_LOCATION ${UNITREE_SDK_LIB})
+target_link_libraries(unitree_sdk1 INTERFACE
+#        PkgConfig::LCM
+        Threads::Threads
+        ${Boost_LIBRARIES})
+target_include_directories(unitree_sdk1 INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
 endif()
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-# one pc one process
-add_executable(example_position example/example_position.cpp)
-target_link_libraries(example_position ${EXTRA_LIBS})
-
-add_executable(example_velocity example/example_velocity.cpp)
-target_link_libraries(example_velocity ${EXTRA_LIBS})
-
-add_executable(example_torque example/example_torque.cpp)
-target_link_libraries(example_torque ${EXTRA_LIBS})
-
-add_executable(example_walk example/example_walk.cpp)
-target_link_libraries(example_walk ${EXTRA_LIBS})
-
-add_executable(example_joystick example/example_joystick.cpp)
-target_link_libraries(example_joystick ${EXTRA_LIBS})
-
-
-# install
-install(TARGETS
-  example_position example_velocity example_torque example_walk example_joystick
-  DESTINATION bin/unitree)
-install(DIRECTORY lib/cpp/${ARCH}/
-  DESTINATION lib/unitree
-  USE_SOURCE_PERMISSIONS)

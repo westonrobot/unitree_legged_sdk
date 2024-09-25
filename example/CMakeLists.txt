@@ -1,0 +1,15 @@
+# one pc one process
+add_executable(example_position example_position.cpp)
+target_link_libraries(example_position unitree_sdk1)
+
+add_executable(example_velocity example_velocity.cpp)
+target_link_libraries(example_velocity unitree_sdk1)
+
+add_executable(example_torque example_torque.cpp)
+target_link_libraries(example_torque unitree_sdk1)
+
+add_executable(example_walk example_walk.cpp)
+target_link_libraries(example_walk unitree_sdk1)
+
+add_executable(example_joystick example_joystick.cpp)
+target_link_libraries(example_joystick unitree_sdk1)
